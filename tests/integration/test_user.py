@@ -24,3 +24,17 @@ async def test_create_invalid_user(client):
     )
     assert resp.status == HTTPBadRequest.status_code
     assert resp.reason == '[{"loc": [], "err": "Emails should contain \'@\' sign."}]'
+
+
+async def test_create_duplicated_user(client):
+    resp = await client.post(
+        "/api/v1/user",
+        json={"name": "foo", "lastname": "bar", "email": "other@gmail.com"},
+    )
+    assert resp.status == HTTPCreated.status_code
+    resp = await client.post(
+        "/api/v1/user",
+        json={"name": "foo", "lastname": "bar", "email": "other@gmail.com"},
+    )
+    assert resp.status == HTTPBadRequest.status_code
+    assert resp.reason == "Email already exists"

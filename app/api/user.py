@@ -10,6 +10,7 @@ from aiohttp.web import (
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize, validator
+from sqlalchemy.exc import IntegrityError
 
 from app.models.user import User
 
@@ -44,7 +45,15 @@ async def create_user_handler(request: Request) -> StreamResponse:
         email=user_request.email, name=user_request.name, lastname=user_request.lastname
     )
     session.add(user)
-    await session.commit()
+    try:
+        await session.commit()
+    except IntegrityError as err:
+        if 'duplicate key value violates unique constraint "user_email_key"' in str(
+            err.orig
+        ):
+            print(f"Duplicated email {repr(err)}")
+            raise HTTPBadRequest(reason="Email already exists")
+        raise
     print(f"New user added: {user}")
     user_json = dumps(serialize(CreateUserResponse, user))
     return json_response(data=user_json, status=HTTPCreated.status_code)
