@@ -1,0 +1,9 @@
+.git/
+.gitignore
+*.log
+log/
+.idea/
+.vscode/
+
+*.egg-info
+__pycache__/
