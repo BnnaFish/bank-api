@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from json import dumps
 from uuid import UUID
 
@@ -13,6 +14,7 @@ from aiohttp.web import (
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize, validator
+from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.transaction import Transaction, TransactionType
@@ -32,10 +34,16 @@ class CreateTransactionRequest:
 
 
 @dataclass
-class CreateTransactionResponse(CreateTransactionRequest):
+class TransactionResponse(CreateTransactionRequest):
     uuid: UUID
     balance_before: int
     balance_after: int
+
+
+@dataclass
+class GetTransactionsRequest:
+    wallet_uuid: UUID
+    to_date: int
 
 
 async def create_transaction_handler(request: Request) -> StreamResponse:
@@ -78,7 +86,7 @@ async def create_transaction_handler(request: Request) -> StreamResponse:
     session.add(transaction)
     await session.commit()
     print(f"New transaction added: {transaction}")
-    transaction_dict = serialize(CreateTransactionResponse, transaction)
+    transaction_dict = serialize(TransactionResponse, transaction)
     transaction_json = dumps(transaction_dict, default=str)
     return json_response(data=transaction_json, status=HTTPCreated.status_code)
 
@@ -90,6 +98,32 @@ async def get_transaction_handler(request: Request) -> StreamResponse:
     if transaction is None:
         return HTTPNotFound()
     print(f"Return {transaction}")
-    transaction_dict = serialize(CreateTransactionResponse, transaction)
+    transaction_dict = serialize(TransactionResponse, transaction)
+    transaction_json = dumps(transaction_dict, default=str)
+    return json_response(data=transaction_json, status=HTTPOk.status_code)
+
+
+async def get_transactions_handler(request: Request) -> StreamResponse:
+    try:
+        get_transactions_request = deserialize(
+            GetTransactionsRequest, await request.json()
+        )
+    except ValidationError as err:
+        raise HTTPBadRequest(reason=dumps(err.errors))
+    print(f"Get transactions request: {get_transactions_request}")
+    max_date = datetime.fromtimestamp(get_transactions_request.to_date)
+
+    session = request["session"]
+    statement = (
+        select(Transaction)
+        .where(Transaction.wallet_uuid == get_transactions_request.wallet_uuid)
+        .filter(Transaction.created_at <= max_date)
+        .order_by(desc(Transaction.created_at))
+    )
+    last_transaction = (await session.execute(statement)).scalars().first()
+    if last_transaction is None:
+        return HTTPNotFound()
+    print(f"Found transaction: {last_transaction}")
+    transaction_dict = serialize(TransactionResponse, last_transaction)
     transaction_json = dumps(transaction_dict, default=str)
     return json_response(data=transaction_json, status=HTTPOk.status_code)

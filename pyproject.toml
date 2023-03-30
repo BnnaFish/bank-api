@@ -14,6 +14,7 @@ pyhocon = "^0.3.60"
 apischema = "^0.18.0"
 asyncpg = "^0.27.0"
 sqlalchemy = "^2.0.7"
+pytz = "^2023.3"
 
 
 [tool.poetry.group.test.dependencies]
@@ -22,6 +23,7 @@ pytest-clarity = "^1.0.1"
 pytest-cov = "^4.0.0"
 pytest-testdox = "^3.0.1"
 pytest-aiohttp = "^1.0.4"
+freezegun = "^1.2.2"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -2,7 +2,8 @@ import enum
 from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import BIGINT, CheckConstraint, ForeignKey, Uuid, func
+import pytz
+from sqlalchemy import BIGINT, CheckConstraint, ForeignKey, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
@@ -19,8 +20,13 @@ class Transaction(Base):
     uuid: Mapped[UUID] = mapped_column(
         init=False, primary_key=True, default_factory=uuid4
     )
+    # lambda is used cause it will be easy to test with freezegun
+    # https://stackoverflow.com/a/58776798
     created_at: Mapped[datetime] = mapped_column(
-        insert_default=func.now(), default=None, init=False, index=True
+        insert_default=lambda: datetime.now(pytz.utc),
+        default=None,
+        init=False,
+        index=True,
     )
     type: Mapped[TransactionType]
     amount: Mapped[int] = mapped_column(

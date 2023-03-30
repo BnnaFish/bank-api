@@ -1,6 +1,10 @@
 from aiohttp import web
 
-from app.api.transaction import create_transaction_handler, get_transaction_handler
+from app.api.transaction import (
+    create_transaction_handler,
+    get_transaction_handler,
+    get_transactions_handler,
+)
 from app.api.user import create_user_handler
 from app.api.wallet import create_wallet_handler, get_wallet_handler
 from app.cleanups.database import close_db
@@ -26,6 +30,7 @@ def init_app() -> web.Application:
             web.get("/api/v1/wallet/{wallet_uuid}", get_wallet_handler),
             web.post("/api/v1/transaction", create_transaction_handler),
             web.get("/api/v1/transaction/{transaction_uuid}", get_transaction_handler),
+            web.get("/api/v1/transactions", get_transactions_handler),
         ]
     )
     return app
