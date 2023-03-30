@@ -27,14 +27,15 @@ async def test_create_invalid_user(client):
 
 
 async def test_create_duplicated_user(client):
+    same_email = "other@gmail.com"
     resp = await client.post(
         "/api/v1/user",
-        json={"name": "foo", "lastname": "bar", "email": "other@gmail.com"},
+        json={"name": "foo", "lastname": "bar", "email": same_email},
     )
     assert resp.status == HTTPCreated.status_code
     resp = await client.post(
         "/api/v1/user",
-        json={"name": "foo", "lastname": "bar", "email": "other@gmail.com"},
+        json={"name": "foo", "lastname": "bar", "email": same_email},
     )
     assert resp.status == HTTPBadRequest.status_code
     assert resp.reason == "Email already exists"

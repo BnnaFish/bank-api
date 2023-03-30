@@ -13,6 +13,7 @@ from aiohttp.web import (
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize, validator
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.transaction import Transaction, TransactionType
 from app.models.wallet import Wallet
@@ -46,7 +47,7 @@ async def create_transaction_handler(request: Request) -> StreamResponse:
         raise HTTPBadRequest(reason=dumps(err.errors))
     print(f"New transaction to add: {transaction_request}")
 
-    session = request["session"]
+    session: AsyncSession = request["session"]
     wallet: Wallet | None = await session.get(
         Wallet, transaction_request.wallet_uuid, with_for_update=True
     )

@@ -1,5 +1,3 @@
--include .env
-
 # commands
 lint: mypy flake8
 
