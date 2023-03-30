@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from apischema import deserialize
 from pyhocon import ConfigFactory
@@ -17,11 +17,10 @@ class DatabaseConfig:
 
 
 def config_factory(
-    folder: str = "settings", section: str | None = None
+    folder: str = "settings",
+    section: str | None = None,
 ) -> dict[str, Any]:
-    """
-    parsing hocon config from the given folder for the given section in file
-    """
+    """Parsing hocon config from the given folder for the given section in file."""
     package_dir = Path(folder)
     env = os.getenv("ENV", "default")
     conf_path = package_dir / f"{env}.conf"
@@ -32,5 +31,7 @@ def config_factory(
 
 
 database_config = deserialize(
-    DatabaseConfig, config_factory(folder="settings", section="database"), coerce=True
+    DatabaseConfig,
+    config_factory(folder="settings", section="database"),
+    coerce=True,
 )

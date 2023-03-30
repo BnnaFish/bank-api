@@ -11,7 +11,9 @@ class Wallet(Base):
     __tablename__ = "wallet"
 
     uuid: Mapped[UUID] = mapped_column(
-        init=False, primary_key=True, default_factory=uuid4
+        init=False,
+        primary_key=True,
+        default_factory=uuid4,
     )
     created_at: Mapped[datetime] = mapped_column(
         insert_default=func.now(),

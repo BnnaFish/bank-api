@@ -8,7 +8,10 @@ from app.settings import DatabaseConfig
 async def init_db(app: web.Application):
     database_config: DatabaseConfig = app["database_config"]
     engine = create_async_engine(
-        f"postgresql+asyncpg://{database_config.user}:{database_config.password}@{database_config.host}:{database_config.port}/{database_config.schema}",
+        "postgresql+asyncpg://"
+        f"{database_config.user}:{database_config.password}"
+        "@"
+        f"{database_config.host}:{database_config.port}/{database_config.schema}",
     )
     app["db"] = engine
     async with engine.begin() as conn:

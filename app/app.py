@@ -31,6 +31,6 @@ def init_app() -> web.Application:
             web.post("/api/v1/transaction", create_transaction_handler),
             web.get("/api/v1/transaction/{transaction_uuid}", get_transaction_handler),
             web.get("/api/v1/transactions", get_transactions_handler),
-        ]
+        ],
     )
     return app

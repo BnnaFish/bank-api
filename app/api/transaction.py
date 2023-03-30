@@ -1,6 +1,6 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime
-from json import dumps
 from uuid import UUID
 
 from aiohttp.web import (
@@ -49,15 +49,18 @@ class GetTransactionsRequest:
 async def create_transaction_handler(request: Request) -> StreamResponse:
     try:
         transaction_request = deserialize(
-            CreateTransactionRequest, await request.json()
+            CreateTransactionRequest,
+            await request.json(),
         )
     except ValidationError as err:
-        raise HTTPBadRequest(reason=dumps(err.errors))
+        raise HTTPBadRequest(reason=json.dumps(err.errors))
     print(f"New transaction to add: {transaction_request}")
 
     session: AsyncSession = request["session"]
     wallet: Wallet | None = await session.get(
-        Wallet, transaction_request.wallet_uuid, with_for_update=True
+        Wallet,
+        transaction_request.wallet_uuid,
+        with_for_update=True,
     )
     if wallet is None:
         raise HTTPNotFound()
@@ -68,13 +71,12 @@ async def create_transaction_handler(request: Request) -> StreamResponse:
         case TransactionType.WITHDRAW:
             if wallet.amount - transaction_request.amount < 0:
                 raise HTTPPaymentRequired(
-                    reason=f"Not sufficient funds. Got: {wallet.amount}, required: {transaction_request.amount}"
+                    reason=(
+                        f"Not sufficient funds. Got: {wallet.amount},"
+                        f"required: {transaction_request.amount}"
+                    ),
                 )
             wallet.amount -= transaction_request.amount
-        case _:
-            raise HTTPBadRequest(
-                f"Unknown transaction type: {transaction_request.type.value}"
-            )
     transaction = Transaction(
         type=transaction_request.type,
         amount=transaction_request.amount,
@@ -87,7 +89,7 @@ async def create_transaction_handler(request: Request) -> StreamResponse:
     await session.commit()
     print(f"New transaction added: {transaction}")
     transaction_dict = serialize(TransactionResponse, transaction)
-    transaction_json = dumps(transaction_dict, default=str)
+    transaction_json = json.dumps(transaction_dict, default=str)
     return json_response(data=transaction_json, status=HTTPCreated.status_code)
 
 
@@ -99,17 +101,18 @@ async def get_transaction_handler(request: Request) -> StreamResponse:
         return HTTPNotFound()
     print(f"Return {transaction}")
     transaction_dict = serialize(TransactionResponse, transaction)
-    transaction_json = dumps(transaction_dict, default=str)
+    transaction_json = json.dumps(transaction_dict, default=str)
     return json_response(data=transaction_json, status=HTTPOk.status_code)
 
 
 async def get_transactions_handler(request: Request) -> StreamResponse:
     try:
         get_transactions_request = deserialize(
-            GetTransactionsRequest, await request.json()
+            GetTransactionsRequest,
+            await request.json(),
         )
     except ValidationError as err:
-        raise HTTPBadRequest(reason=dumps(err.errors))
+        raise HTTPBadRequest(reason=json.dumps(err.errors))
     print(f"Get transactions request: {get_transactions_request}")
     max_date = datetime.fromtimestamp(get_transactions_request.to_date)
 
@@ -125,5 +128,5 @@ async def get_transactions_handler(request: Request) -> StreamResponse:
         return HTTPNotFound()
     print(f"Found transaction: {last_transaction}")
     transaction_dict = serialize(TransactionResponse, last_transaction)
-    transaction_json = dumps(transaction_dict, default=str)
+    transaction_json = json.dumps(transaction_dict, default=str)
     return json_response(data=transaction_json, status=HTTPOk.status_code)

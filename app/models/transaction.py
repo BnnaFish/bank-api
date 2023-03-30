@@ -10,15 +10,17 @@ from app.models.base import Base
 
 
 class TransactionType(enum.Enum):
-    DEPOSIT = "DEPOSIT"
-    WITHDRAW = "WITHDRAW"
+    DEPOSIT = "DEPOSIT"  # noqa: WPS115 Found upper-case constant in a class
+    WITHDRAW = "WITHDRAW"  # noqa: WPS115 Found upper-case constant in a class
 
 
 class Transaction(Base):
     __tablename__ = "transaction"
 
     uuid: Mapped[UUID] = mapped_column(
-        init=False, primary_key=True, default_factory=uuid4
+        init=False,
+        primary_key=True,
+        default_factory=uuid4,
     )
     # lambda is used cause it will be easy to test with freezegun
     # https://stackoverflow.com/a/58776798

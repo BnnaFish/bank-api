@@ -8,8 +8,16 @@ The idea is to test fresh SQLAlchemy 2.0 with asynchronous interface.
 3 simple entities:
 
 - user: name, last, email
-- wallet: bank account with current integer balance
+- wallet: bank account with current integer balance with UUID
 - transaction: DEPOSIT or WITHDRAW certain amount for a given wallet
+
+# API
+
+- user POST
+- wallet POST GET
+- transaction POST GET
+- transactions GET - filter by created time
+
 
 # HowTo
 
@@ -17,6 +25,13 @@ To run tests just:
 
 ``` bash
 make dc.test_integration
+```
+
+linters:
+
+``` bash
+make flake8
+make mypy
 ```
 
 Other options placed in Makefile
