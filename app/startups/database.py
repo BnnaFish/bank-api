@@ -1,8 +1,8 @@
 from aiohttp import web
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.settings import DatabaseConfig
 from app.models.base import Base
+from app.settings import DatabaseConfig
 
 
 async def init_db(app: web.Application):

@@ -1,16 +1,15 @@
-from asyncio import sleep
 from dataclasses import dataclass
 from json import dumps
 from uuid import UUID
 
 from aiohttp.web import (
-    Request,
-    StreamResponse,
     HTTPBadRequest,
     HTTPCreated,
     HTTPNotFound,
-    HTTPPaymentRequired,
     HTTPOk,
+    HTTPPaymentRequired,
+    Request,
+    StreamResponse,
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize, validator

@@ -1,6 +1,6 @@
 from json import loads
 
-from aiohttp.web import HTTPCreated, HTTPBadRequest
+from aiohttp.web import HTTPBadRequest, HTTPCreated
 
 
 async def test_create_wallet(client):

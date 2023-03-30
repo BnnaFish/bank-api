@@ -3,10 +3,10 @@ from datetime import datetime
 from json import dumps
 
 from aiohttp.web import (
-    Request,
-    StreamResponse,
     HTTPBadRequest,
     HTTPCreated,
+    Request,
+    StreamResponse,
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize, validator

@@ -3,17 +3,16 @@ from datetime import datetime
 from json import dumps
 
 from aiohttp.web import (
-    Request,
-    StreamResponse,
     HTTPBadRequest,
     HTTPCreated,
     HTTPNotFound,
     HTTPOk,
+    Request,
+    StreamResponse,
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize
 from sqlalchemy.exc import IntegrityError
-
 
 from app.models.wallet import Wallet
 

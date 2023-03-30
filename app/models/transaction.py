@@ -1,9 +1,9 @@
-from datetime import datetime
 import enum
+from datetime import datetime
 from uuid import UUID, uuid4
 
-from sqlalchemy import BIGINT, CheckConstraint, Uuid, func, ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import BIGINT, CheckConstraint, ForeignKey, Uuid, func
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base
 

@@ -1,8 +1,7 @@
 import datetime
 
 from sqlalchemy import TIMESTAMP, MetaData
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import MappedAsDataclass
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 
 metadata_obj = MetaData()
 
