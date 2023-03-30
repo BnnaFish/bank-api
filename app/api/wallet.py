@@ -7,13 +7,14 @@ from aiohttp.web import (
     StreamResponse,
     HTTPBadRequest,
     HTTPCreated,
+    HTTPNotFound,
+    HTTPOk,
     json_response,
 )
 from apischema import ValidationError, deserialize, serialize
 from sqlalchemy.exc import IntegrityError
 
 
-from app.models.user import User
 from app.models.wallet import Wallet
 
 
@@ -51,6 +52,18 @@ async def create_wallet_handler(request: Request) -> StreamResponse:
             raise HTTPBadRequest(reason="User not exists")
         raise
     print(f"New wallet added: {wallet}")
-    user_dict = serialize(CreateWalletResponse, wallet)
-    user_json = dumps(user_dict, default=str)
-    return json_response(data=user_json, status=HTTPCreated.status_code)
+    wallet_dict = serialize(CreateWalletResponse, wallet)
+    wallet_json = dumps(wallet_dict, default=str)
+    return json_response(data=wallet_json, status=HTTPCreated.status_code)
+
+
+async def get_wallet_handler(request: Request) -> StreamResponse:
+    wallet_uuid = request.match_info["wallet_uuid"]
+    session = request["session"]
+    wallet: Wallet | None = await session.get(Wallet, wallet_uuid)
+    if wallet is None:
+        raise HTTPNotFound()
+    print(f"Return {wallet}")
+    wallet_dict = serialize(CreateWalletResponse, wallet)
+    wallet_json = dumps(wallet_dict, default=str)
+    return json_response(data=wallet_json, status=HTTPOk.status_code)
