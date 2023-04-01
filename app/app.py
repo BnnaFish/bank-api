@@ -25,10 +25,10 @@ def init_app() -> web.Application:
 
     app.add_routes(
         [
-            web.post("/api/v1/user", create_user_handler),
-            web.post("/api/v1/wallet", create_wallet_handler),
+            web.post("/api/v1/users", create_user_handler),
+            web.post("/api/v1/wallets", create_wallet_handler),
             web.get("/api/v1/wallet/{wallet_uuid}", get_wallet_handler),
-            web.post("/api/v1/transaction", create_transaction_handler),
+            web.post("/api/v1/transactions", create_transaction_handler),
             web.get("/api/v1/transaction/{transaction_uuid}", get_transaction_handler),
             web.get("/api/v1/transactions", get_transactions_handler),
         ],

@@ -5,12 +5,12 @@ from aiohttp.web import HTTPBadRequest, HTTPCreated
 
 async def test_create_wallet(client):
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     user = loads(await resp.json())
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": user["id"]},
     )
     assert resp.status == HTTPCreated.status_code
@@ -22,7 +22,7 @@ async def test_create_wallet(client):
 
 async def test_create_wallet_user_not_exists(client):
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": 1_000_000},
     )
     assert resp.status == HTTPBadRequest.status_code

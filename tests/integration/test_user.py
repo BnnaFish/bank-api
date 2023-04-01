@@ -5,7 +5,7 @@ from aiohttp.web import HTTPBadRequest, HTTPCreated
 
 async def test_create_user(client):
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     assert resp.status == HTTPCreated.status_code
@@ -19,7 +19,7 @@ async def test_create_user(client):
 
 async def test_create_invalid_user(client):
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "bad_email"},
     )
     assert resp.status == HTTPBadRequest.status_code
@@ -29,12 +29,12 @@ async def test_create_invalid_user(client):
 async def test_create_duplicated_user(client):
     same_email = "other@gmail.com"
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": same_email},
     )
     assert resp.status == HTTPCreated.status_code
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": same_email},
     )
     assert resp.status == HTTPBadRequest.status_code

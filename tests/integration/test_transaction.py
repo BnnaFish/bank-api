@@ -9,13 +9,13 @@ from freezegun import freeze_time
 async def test_create_transaction_deposit(client):
     # add new user
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     user = loads(await resp.json())
     # add new wallet
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": user["id"]},
     )
     wallet = loads(await resp.json())
@@ -23,7 +23,7 @@ async def test_create_transaction_deposit(client):
 
     # make new transaction
     resp = await client.post(
-        "/api/v1/transaction",
+        "/api/v1/transactions",
         json={"wallet_uuid": wallet_uuid, "amount": 100, "type": "DEPOSIT"},
     )
     assert resp.status == HTTPCreated.status_code
@@ -54,13 +54,13 @@ async def test_create_transaction_deposit(client):
 async def test_transaction_withdraw(client):
     # add new user
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     user = loads(await resp.json())
     # add new wallet
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": user["id"]},
     )
     wallet = loads(await resp.json())
@@ -68,14 +68,14 @@ async def test_transaction_withdraw(client):
 
     # deposit some money
     resp = await client.post(
-        "/api/v1/transaction",
+        "/api/v1/transactions",
         json={"wallet_uuid": wallet_uuid, "amount": 100, "type": "DEPOSIT"},
     )
     assert resp.status == HTTPCreated.status_code
 
     # withdraw money
     resp = await client.post(
-        "/api/v1/transaction",
+        "/api/v1/transactions",
         json={"wallet_uuid": wallet_uuid, "amount": 99, "type": "WITHDRAW"},
     )
     transaction = loads(await resp.json())
@@ -99,13 +99,13 @@ async def test_transaction_withdraw(client):
 async def test_transaction_no_money_no_honey(client):
     # add new user
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     user = loads(await resp.json())
     # add new wallet
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": user["id"]},
     )
     wallet = loads(await resp.json())
@@ -113,14 +113,14 @@ async def test_transaction_no_money_no_honey(client):
 
     # deposit some money
     resp = await client.post(
-        "/api/v1/transaction",
+        "/api/v1/transactions",
         json={"wallet_uuid": wallet_uuid, "amount": 100, "type": "DEPOSIT"},
     )
     assert resp.status == HTTPCreated.status_code
 
     # withdraw money
     resp = await client.post(
-        "/api/v1/transaction",
+        "/api/v1/transactions",
         json={"wallet_uuid": wallet_uuid, "amount": 200, "type": "WITHDRAW"},
     )
     assert resp.status == HTTPPaymentRequired.status_code
@@ -135,13 +135,13 @@ async def test_transaction_no_money_no_honey(client):
 async def test_transactions(client):
     # add new user
     resp = await client.post(
-        "/api/v1/user",
+        "/api/v1/users",
         json={"name": "foo", "lastname": "bar", "email": "some@gmail.com"},
     )
     user = loads(await resp.json())
     # add new wallet
     resp = await client.post(
-        "/api/v1/wallet",
+        "/api/v1/wallets",
         json={"user_id": user["id"]},
     )
     wallet = loads(await resp.json())
@@ -157,7 +157,7 @@ async def test_transactions(client):
     # deposit some money
     with freeze_time(first_trs_date):
         resp = await client.post(
-            "/api/v1/transaction",
+            "/api/v1/transactions",
             json={"wallet_uuid": wallet_uuid, "amount": 100, "type": "DEPOSIT"},
         )
         assert resp.status == HTTPCreated.status_code
@@ -165,7 +165,7 @@ async def test_transactions(client):
     # deposit some money month after
     with freeze_time(second_trs_date):
         resp = await client.post(
-            "/api/v1/transaction",
+            "/api/v1/transactions",
             json={"wallet_uuid": wallet_uuid, "amount": 100, "type": "DEPOSIT"},
         )
         assert resp.status == HTTPCreated.status_code
